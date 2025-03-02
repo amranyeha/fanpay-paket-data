@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAKET DATA NASIONAL V3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: rgb(223, 216, 216);
+        }
+
+        #nama-produk {
+            letter-spacing: 1px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+            /* Mengurangi margin atas */
+            margin-bottom: 5px;
+            /* Mengurangi margin bawah */
+            /* margin-right: 50%;
+            padding-right: 10%; */
+            /* border: 1px solid purple; */
+        }
+
+        #providerName {
+            color: transparent;
+        }
+
+        /* .harga-produk {
+            color: #5f5b5b;
+        } */
+
+        .harga-produk p:hover {}
+
+        .harga-produk:hover {
+            color: #ffffff;
+
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .btn-category {
+            font-size: small;
+            font-weight: bold;
+            padding: 5px;
+            margin: 10px 5px 0;
+            cursor: pointer;
+            background-color: transparent;
+            border: 2px solid #004085;
+            color: #004085;
+            border-radius: 8px;
+        }
+
+        .btn-category:active {
+            background-color: #004085;
+            color: white;
+        }
+
+        .btn-category:hover {
+            background-color: #004085;
+            color: white;
+        }
+
+        .btn-produk {
+            background-color: #f3efef;
+            /* color: rgb(0, 0, 0); */
+            border: none;
+            padding: 5px;
+            /* Padding lebih kecil untuk mengurangi tinggi tombol */
+            margin: 6px auto;
+            /* Mengurangi margin */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 91%;
+            height: 90%;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+        }
+
+        /* .btn-produk:active {
+            background-color: #004085;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+        } */
+
+        .btn-produk:hover {
+            background-color: #004085;
+            color: #ffffff;
+            /* display: flex;
+            flex-direction: column;
+            padding: 5px; */
+        }
+
+
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 65% auto 15%;
+            padding: 20px;
+            width: 300px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 0px 10px gray;
+        }
+
+        .close {
+            color: red;
+            font-size: 35px;
+            float: right;
+            cursor: pointer;
+        }
+
+        .container-input {
+            z-index: 2;
+            /* display: flex; */
+            position: fixed;
+            /* align-items: center; */
+            /* justify-content: center; */
+            width: 100vw;
+            height: 25%;
+            top: 0;
+            left: 0;
+            /* padding: 0; */
+            background-color: rgb(223, 216, 216);
+            /* gap: 2%; */
+            /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); */
+            /* border: 1px solid red; */
+        }
+
+
+
+        input[type="tel"] {
+            z-index: 2;
+            width: 75%;
+            height: 27px;
+            /* padding: 10px; */
+            /* margin-bottom: -20px; */
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            /* top: 50px; */
+            /* margin-left: 1%; */
+            left: 5px;
+            /* right: 5px; */
+            margin-left: 1px;
+            margin-top: 27px;
+            padding: 12px 15px;
+            font-size: 16px;
+            background-color: #fff;
+            outline: none;
+            transition: border-color 0.3s;
+            font-family: 'Roboto', sans-serif;
+        }
+
+
+        .buy-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .buttonsContainer {
+            display: flex;
+            justify-content: center;
+            /* border: 1px solid red; */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>haha</h2>
+        <h2>.</h2>
+        <p>.</p>
+        <div class="container-input">
+            <input type="tel" id="phoneNumber" value="08" placeholder="08xx xxxx xxxx" oninput="detectProvider()" />
+            <div id="categoryContainer"></div> <!-- Menampilkan kategori -->
+        </div>
+
+        <h3 id="providerName"></h3>
+        <h1> </h1>
+        <div id="buttonsContainer"></div> <!-- Menampilkan produk -->
+    </div>
+
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalTitle"></h3>
+            <p><strong>Provider:</strong> <span id="modalProvider"></span></p>
+            <p><strong>Kuota:</strong> <span id="modalKuota"></span></p>
+            <p><strong>Harga:</strong> <span id="modalHarga"></span></p>
+            <button class="buy-button" id="buyNowButton">Beli Sekarang</button>
+        </div>
+    </div>
+
+    <script>
+        var mataUang = "Rp.";
+
+        var paketData = {
+            Telkomsel: {
+                "Data Bulanan": [
+                    { nama: "500MB - 15 Hari", harga: 6875, link: "https://fanpaystore.bukaolshop.site/produk/tsel-500mb-15-hari-2919451" },
+                    { nama: "1GB - 30 Hari", harga: 11030, link: "https://fanpaystore.bukaolshop.site/produk/tsel-1gb-30-hari-2919453" },
+                    { nama: "1.5GB - 30 Hari", harga: 22450, link: "https://fanpaystore.bukaolshop.site/produk/tsel-1-5gb-30-hari-2919455" },
+                    { nama: "2GB - 30 Hari", harga: 18789, link: "https://fanpaystore.bukaolshop.site/produk/tsel-2gb-30-hari-2919476" },
+                    { nama: "3GB - 30 Hari", harga: 22664, link: "https://fanpaystore.bukaolshop.site/produk/tsel-3gb-30-hari-2919477" },
+                    { nama: "4GB - 30 Hari", harga: 30389, link: "https://fanpaystore.bukaolshop.site/produk/tsel-4gb-30-hari-2919456" }
+                    // { nama: "5GB (Gift) - 30 Hari", harga: 18150, link: "https://example.com/telkomsel-5GB-gift" },
+                    // { nama: "5GB - 30 Hari", harga: 32464, link: "https://example.com/telkomsel-5GB" },
+                    // { nama: "6GB - 30 Hari", harga: 43250, link: "https://example.com/telkomsel-6GB" },
+                    // { nama: "7GB - 30 Hari", harga: 45249, link: "https://example.com/telkomsel-7GB" },
+                    // { nama: "8GB - 30 Hari", harga: 29250, link: "https://example.com/telkomsel-8GB" },
+                    // { nama: "8GB - 30 Hari", harga: 47250, link: "https://example.com/telkomsel-8GB-alt" },
+                    // { nama: "9GB - 30 Hari", harga: 55100, link: "https://example.com/telkomsel-9GB" },
+                    // { nama: "10GB - 30 Hari", harga: 58940, link: "https://example.com/telkomsel-10GB" },
+                    // { nama: "11GB - 30 Hari", harga: 66850, link: "https://example.com/telkomsel-11GB" },
+                    // { nama: "12GB - 30 Hari", harga: 69850, link: "https://example.com/telkomsel-12GB" },
+                    // { nama: "14GB - 30 Hari", harga: 73190, link: "https://example.com/telkomsel-14GB" },
+                    // { nama: "15GB - 30 Hari", harga: 135050, link: "https://example.com/telkomsel-15GB" },
+                    // { nama: "16GB - 30 Hari", harga: 138050, link: "https://example.com/telkomsel-16GB" },
+                    // { nama: "18GB - 30 Hari", harga: 139050, link: "https://example.com/telkomsel-18GB" },
+                    // { nama: "25GB - 30 Hari", harga: 140050, link: "https://example.com/telkomsel-25GB" },
+                    // { nama: "28GB - 30 Hari", harga: 145550, link: "https://example.com/telkomsel-28GB" },
+                    // { nama: "30GB - 30 Hari", harga: 166050, link: "https://example.com/telkomsel-30GB" },
+                    // { nama: "45GB - 30 Hari", harga: 185550, link: "https://example.com/telkomsel-45GB" },
+                    // { nama: "49GB - 30 Hari", harga: 186000, link: "https://example.com/telkomsel-49GB" },
+                    // { nama: "50GB - 30 Hari", harga: 186050, link: "https://example.com/telkomsel-50GB" },
+                    // { nama: "70GB - 30 Hari", harga: 188300, link: "https://example.com/telkomsel-70GB" },
+                    // { nama: "75GB - 30 Hari", harga: 190050, link: "https://example.com/telkomsel-75GB" },
+                    // { nama: "100GB - 30 Hari", harga: 233750, link: "https://example.com/telkomsel-100GB" }
+                ]
+            },
+            XL: {
+                "Bebas Puas 2K": [
+                    { nama: "250MB (1 Hari)", harga: 1944, link: "https://fanpaystore.bukaolshop.site/produk/250mb-1-hari-bebas-puas-2k-2919458" },
+                    { nama: "500MB (2 Hari)", harga: 3750, link: "https://fanpaystore.bukaolshop.site/produk/500mb-2-hari-bebas-puas-2k-2919459" },
+                    { nama: "750MB (1 Hari)", harga: 5499, link: "https://fanpaystore.bukaolshop.site/produk/750mb-1-hari-bebas-puas-2k-1509353" }
+                    // { nama: "1GB 4 Hari", harga: 7350, link: "https://example.com/xl-1GB" },
+                    // { nama: "1,25GB 5 Hari", harga: 9099, link: "https://example.com/xl-1250MB" },
+                    // { nama: "1,5GB 6 Hari", harga: 10400, link: "https://example.com/xl-1500MB" },
+                    // { nama: "1,75GB 7 Hari", harga: 12062, link: "https://example.com/xl-1750MB" },
+                    // { nama: "2GB 8 Hari", harga: 13800, link: "https://example.com/xl-2GB" },
+                    // { nama: "2,25GB 9 Hari", harga: 15500, link: "https://example.com/xl-2250MB" },
+                    // { nama: "2,5GB 10 Hari", harga: 17205, link: "https://example.com/xl-2500MB" },
+                    // { nama: "2,75GB 11 Hari", harga: 18950, link: "https://example.com/xl-2750MB" },
+                    // { nama: "3GB 12 Hari", harga: 20650, link: "https://example.com/xl-3GB" },
+                    // { nama: "3,25GB 13 Hari", harga: 22350, link: "https://example.com/xl-3250MB" },
+                    // { nama: "3,5GB 14 Hari", harga: 24050, link: "https://example.com/xl-3500MB" },
+                    // { nama: "3,75GB 15 Hari", harga: 25000, link: "https://example.com/xl-3750MB" },
+                    // { nama: "4GB 16 Hari", harga: 27450, link: "https://example.com/xl-4GB" },
+                    // { nama: "4,25GB 17 Hari", harga: 29150, link: "https://example.com/xl-4250MB" },
+                    // { nama: "4,5GB 18 Hari", harga: 30850, link: "https://example.com/xl-4500MB" },
+                    // { nama: "4,75GB 19 Hari", harga: 32550, link: "https://example.com/xl-4750MB" },
+                    // { nama: "5GB 20 Hari", harga: 34289, link: "https://example.com/xl-5GB" },
+                    // { nama: "5,25GB 21 Hari", harga: 35983, link: "https://example.com/xl-5250MB" },
+                    // { nama: "5,5GB 22 Hari", harga: 37699, link: "https://example.com/xl-5500MB" },
+                    // { nama: "5,75GB 23 Hari", harga: 39394, link: "https://example.com/xl-5750MB" },
+                    // { nama: "6GB 24 Hari", harga: 41087, link: "https://example.com/xl-6GB" },
+                    // { nama: "6,25GB 25 Hari", harga: 42780, link: "https://example.com/xl-6250MB" },
+                    // { nama: "6,5GB 26 Hari", harga: 44474, link: "https://example.com/xl-6500MB" },
+                    // { nama: "6,75GB 27 Hari", harga: 46167, link: "https://example.com/xl-6750MB" },
+                    // { nama: "7GB 28 Hari", harga: 47860, link: "https://example.com/xl-7GB" },
+                    // { nama: "7,25GB 29 Hari", harga: 49550, link: "https://example.com/xl-7250MB" },
+                    // { nama: "7,5GB 30 Hari", harga: 51499, link: "https://example.com/xl-7500MB" }
+                ],
+                "Bebas Puas 3K": [
+                    { "nama": "500MB (1 Hari)", "harga": 2869, "link": "https://fanpaystore.bukaolshop.site/produk/500mb-1-hari-bebas-puas-3k-2919490" },
+                    { "nama": "1GB (2 Hari)", "harga": 5650, "link": "https://fanpaystore.bukaolshop.site/produk/1gb-2-hari-bebas-puas-3k-2919460" },
+                    { "nama": "1,5GB (3 Hari)", "harga": 8365, "link": "https://fanpaystore.bukaolshop.site/produk/1-5gb-3-hari-bebas-puas-3k-2919496" }
+                    // { "nama": "2GB (4 Hari)", "harga": 11200, "link": "https://example.com/xl-2GB" },
+                    // { "nama": "2,5GB (5 Hari)", "harga": 13892, "link": "https://example.com/xl-2.5GB" },
+                    // { "nama": "3GB (6 Hari)", "harga": 15850, "link": "https://example.com/xl-3GB" },
+                    // { "nama": "3,5GB (7 Hari)", "harga": 18471, "link": "https://example.com/xl-3.5GB" },
+                    // { "nama": "4GB (8 Hari)", "harga": 20850, "link": "https://example.com/xl-4GB" },
+                    // { "nama": "4,5GB (9 Hari)", "harga": 23450, "link": "https://example.com/xl-4.5GB" },
+                    // { "nama": "5GB (10 Hari)", "harga": 26199, "link": "https://example.com/xl-5GB" },
+                    // { "nama": "5,5GB (11 Hari)", "harga": 28850, "link": "https://example.com/xl-5.5GB" },
+                    // { "nama": "6GB (12 Hari)", "harga": 31450, "link": "https://example.com/xl-6GB" },
+                    // { "nama": "6,5GB (13 Hari)", "harga": 34100, "link": "https://example.com/xl-6.5GB" },
+                    // { "nama": "7GB (14 Hari)", "harga": 36700, "link": "https://example.com/xl-7GB" },
+                    // { "nama": "7,5GB (15 Hari)", "harga": 38050, "link": "https://example.com/xl-7.5GB" },
+                    // { "nama": "8GB (16 Hari)", "harga": 41900, "link": "https://example.com/xl-8GB" },
+                    // { "nama": "8,5GB (17 Hari)", "harga": 44500, "link": "https://example.com/xl-8.5GB" },
+                    // { "nama": "9GB (18 Hari)", "harga": 47100, "link": "https://example.com/xl-9GB" },
+                    // { "nama": "9,5GB (19 Hari)", "harga": 49700, "link": "https://example.com/xl-9.5GB" },
+                    // { "nama": "10GB (20 Hari)", "harga": 52350, "link": "https://example.com/xl-10GB" },
+                    // { "nama": "10,5GB (21 Hari)", "harga": 54950, "link": "https://example.com/xl-10.5GB" },
+                    // { "nama": "11GB (22 Hari)", "harga": 57550, "link": "https://example.com/xl-11GB" },
+                    // { "nama": "11,5GB (23 Hari)", "harga": 60150, "link": "https://example.com/xl-11.5GB" },
+                    // { "nama": "12GB (24 Hari)", "harga": 62725, "link": "https://example.com/xl-12GB" },
+                    // { "nama": "12,5GB (25 Hari)", "harga": 65350, "link": "https://example.com/xl-12.5GB" },
+                    // { "nama": "13GB (26 Hari)", "harga": 67905, "link": "https://example.com/xl-13GB" },
+                    // { "nama": "13GB (26 Hari)", "harga": 67905, "link": "https://example.com/xl-13GB" },
+                    // { "nama": "13,5GB (27 Hari)", "harga": 69550, "link": "https://example.com/xl-13.5GB" },
+                    // { "nama": "14GB (28 Hari)", "harga": 71200, "link": "https://example.com/xl-14GB" },
+                    // { "nama": "14,5GB (29 Hari)", "harga": 72850, "link": "https://example.com/xl-14.5GB" },
+                    // { "nama": "15GB (30 Hari)", "harga": 74500, "link": "https://example.com/xl-15GB" }
+                ],
+
+                "Bebas Puas 5K": [
+                    { nama: "1.8GB (1 Hari)", harga: 4649, link: "https://fanpaystore.bukaolshop.site/produk/1-8gb-1-hari-bebas-puas-5k-2919518" },
+                    { nama: "3.6GB (2 Hari)", harga: 9080, link: "https://fanpaystore.bukaolshop.site/produk/3-6gb-2-hari-bebas-puas-5k-2919461" },
+                    { nama: "5.4GB (3 Hari)", harga: 13474, link: "https://fanpaystore.bukaolshop.site/produk/5-4gb-3-hari-bebas-puas-5k-2919514" },
+                    // { nama: "7.2GB (4 Hari)", harga: 17950, link: "https://example.com/xl-7.2GB" },
+                    // { nama: "9GB (5 Hari)", harga: 22319, link: "https://example.com/xl-9GB" },
+                    // { nama: "10.8GB (6 Hari)", harga: 26272, link: "https://example.com/xl-10.8GB" },
+                    // { nama: "12.6GB (7 Hari)", harga: 30524, link: "https://example.com/xl-12.6GB" },
+                    // { nama: "14.4GB (8 Hari)", harga: 34937, link: "https://example.com/xl-14.4GB" },
+                    // { nama: "16.2GB (9 Hari)", harga: 39244, link: "https://example.com/xl-16.2GB" },
+                    // { nama: "18GB (10 Hari)", harga: 43549, link: "https://example.com/xl-18GB" },
+                    // { nama: "19.8GB (11 Hari)", harga: 47910, link: "https://example.com/xl-19.8GB" },
+                    // { nama: "21.6GB (12 Hari)", harga: 52375, link: "https://example.com/xl-21.6GB" },
+                    // { nama: "23.4GB (13 Hari)", harga: 56575, link: "https://example.com/xl-23.4GB" },
+                    // { nama: "25.2GB (14 Hari)", harga: 61000, link: "https://example.com/xl-25.2GB" },
+                    // { nama: "27GB (15 Hari)", harga: 65224, link: "https://example.com/xl-27GB" },
+                    // { nama: "28.8GB (16 Hari)", harga: 69395, link: "https://example.com/xl-28.8GB" },
+                    // { nama: "30.6GB (17 Hari)", harga: 74025, link: "https://example.com/xl-30.6GB" },
+                    // { nama: "32.4GB (18 Hari)", harga: 78164, link: "https://example.com/xl-32.4GB" },
+                    // { nama: "34.2GB (19 Hari)", harga: 82675, link: "https://example.com/xl-34.2GB" },
+                    // { nama: "36GB (20 Hari)", harga: 86779, link: "https://example.com/xl-36GB" },
+                    // { nama: "37.8GB (21 Hari)", harga: 91087, link: "https://example.com/xl-37.8GB" },
+                    // { nama: "39.6GB (22 Hari)", harga: 95650, link: "https://example.com/xl-39.6GB" },
+                    // { nama: "41.4GB (23 Hari)", harga: 99654, link: "https://example.com/xl-41.4GB" },
+                    // { nama: "43.2GB (24 Hari)", harga: 104010, link: "https://example.com/xl-43.2GB" },
+                    // { nama: "45GB (25 Hari)", harga: 109299, link: "https://example.com/xl-45GB" },
+                    // { nama: "46.8GB (26 Hari)", harga: 112925, link: "https://example.com/xl-46.8GB" },
+                    // { nama: "48.6GB (27 Hari)", harga: 117250, link: "https://example.com/xl-48.6GB" },
+                    // { nama: "50.4GB (28 Hari)", harga: 121241, link: "https://example.com/xl-50.4GB" },
+                    // { nama: "52.2GB (29 Hari)", harga: 125900, link: "https://example.com/xl-52.2GB" },
+                    // { nama: "54GB (30 Hari)", harga: 130149, link: "https://example.com/xl-54GB" }
+                ],
+
+                "Hotrod Spesial": [
+                    { nama: "1GB + 0,5GB Lokal (2 Hari)", harga: 4900, link: "https://fanpaystore.bukaolshop.site/produk/1gb-0-5gb-lokal-2hari-hotrod-special-2919526" },
+                    { nama: "1,5GB + 1GB Lokal (3 Hari)", harga: 10525, link: "https://fanpaystore.bukaolshop.site/produk/1-5gb-1gb-lokal-3hari-hotrod-special-2919527" },
+                    { nama: "1,5GB + 1GB Lokal + 1GB Youtube (7 Hari)", harga: 15050, link: "https://fanpaystore.bukaolshop.site/produk/1-5gb-1gb-lokal-1gb-youtube-7hari-hotrod-special-2919529" },
+                    { nama: "2GB + 1,5GB Lokal + 2GB Youtube (7 Hari)", harga: 18925, link: "https://fanpaystore.bukaolshop.site/produk/2gb-1-5gb-lokal-2gb-youtube-7hari-hotrod-special-2919531" },
+                    { nama: "3GB + 3GB Lokal + 3GB Youtube (7 Hari)", harga: 24750, link: "https://fanpaystore.bukaolshop.site/produk/3gb-3gb-lokal-3gb-youtube-7hari-hotrod-special-2919532" },
+                    { nama: "8GB (30 Hari)", harga: 29935, link: "https://fanpaystore.bukaolshop.site/produk/8gb-30-hari-hotrod-special-2919533" },
+                    { nama: "14GB (30 Hari)", harga: 41090, link: "https://fanpaystore.bukaolshop.site/produk/14gb-30-hari-hotrod-special-2919534" }
+                ],
+
+                "Data Max": [
+                    // { nama: "2GB + 500MB Apps (30 Hari)", harga: 12200, link: "https://example.com/xl-datamax-2GB" },
+                    // { nama: "3GB + 500MB Apps (30 Hari)", harga: 18200, link: "https://example.com/xl-datamax-3GB" },
+                    // { nama: "4GB + 1GB Apps (30 Hari)", harga: 24450, link: "https://example.com/xl-datamax-4GB" },
+                    // { nama: "5GB + 1GB Apps (30 Hari)", harga: 31450, link: "https://example.com/xl-datamax-5GB" }
+                ],
+
+
+                "Big Data": [
+                    // { nama: "13GB Reguler + Kuota Area (30 Hari)", harga: 40550, link: "https://example.com/xl-13GB" },
+                    // { nama: "21GB Reguler + Kuota Area (30 Hari)", harga: 57550, link: "https://example.com/xl-21GB" },
+                    // { nama: "31GB Reguler + Kuota Area (30 Hari)", harga: 51050, link: "https://example.com/xl-31GB" },
+                    // { nama: "32GB Reguler + Kuota Area (30 Hari)", harga: 63550, link: "https://example.com/xl-32GB" },
+                    // { nama: "38GB Reguler + Kuota Area (30 Hari)", harga: 56400, link: "https://example.com/xl-38GB" },
+                    // { nama: "50GB Reguler + Kuota Area (30 Hari)", harga: 72400, link: "https://example.com/xl-50GB" },
+                    // { nama: "64GB Reguler + Kuota Area (30 Hari)", harga: 75550, link: "https://example.com/xl-64GB" }
+                ],
+                "Combo Flex": [
+                    { nama: "Flex S (1.5GB + Kuota Area 1GB-3.5GB + Bonus Flex) (30 Hari)", harga: 19204, link: "https://fanpaystore.bukaolshop.site/produk/xl-flex-s-2919463" },
+                    { nama: "Flex S+ (3GB + Kuota Area 2GB-7GB + Bonus Flex) (30 Hari)", harga: 31295, link: "https://fanpaystore.bukaolshop.site/produk/xl-flex-s-1509357" },
+                    { nama: "Flex M (5GB + Kuota Area 2GB-10GB + Bonus Flex) (30 Hari)", harga: 43417, link: "https://fanpaystore.bukaolshop.site/produk/xl-flex-m-2919467" },
+                    { nama: "Flex M+ (6GB + Kuota Area 3GB-13GB + Bonus Flex) (30 Hari)", harga: 50399, link: "https://fanpaystore.bukaolshop.site/produk/xl-flex-m-2919466" }
+                    // { nama: "Flex L (9GB + Kuota Area 4GB-18GB + Bonus Flex) (30 Hari)", harga: 62901, link: "https://example.com/xl-flex-l" },
+                    // { nama: "Flex L+ (11GB + Kuota Area 4GB-20GB + Bonus Flex) (30 Hari)", harga: 72717, link: "https://example.com/xl-flex-lplus" },
+                    // { nama: "Flex XL (15GB + Kuota Area 5GB-30GB + Bonus Flex) (30 Hari)", harga: 88003, link: "https://example.com/xl-flex-xl" },
+                    // { nama: "Flex XXL (30GB + Kuota Area 6GB-60GB + Bonus Flex) (30 Hari)", harga: 119705, link: "https://example.com/xl-flex-xxl" },
+                    // { nama: "Flex XXXL (60GB + Kuota Area 10GB-120GB + Bonus Flex) (30 Hari)", harga: 119705, link: "https://example.com/xl-flex-xxxl" }
+                ],
+
+
+                "Xtra Kuota": [
+                    { nama: "Xtra Kuota Kartu Lama 30GB (30 Hari)", harga: 12150, link: "https://fanpaystore.bukaolshop.site/produk/xtra-kuota-30gb-kartu-lama-30-hari-2919469" },
+                    // { nama: "Xtra Kuota Edukasi 2GB (1 Hari)", harga: 1377, link: "https://example.com/xl-edukasi2GB-1hari" },
+                    // { nama: "Xtra Kuota Edukasi 5GB (3 Hari)", harga: 2878, link: "https://example.com/xl-edukasi5GB-3hari" },
+                    // { nama: "Xtra Kuota Facebook 2GB (3 Hari)", harga: 5789, link: "https://example.com/xl-facebook2GB-3hari" },
+                    // { nama: "Xtra Kuota Instagram 2GB (3 Hari)", harga: 5790, link: "https://example.com/xl-instagram2GB-3hari" },
+                    // { nama: "Xtra Kuota TikTok 2GB (3 Hari)", harga: 6055, link: "https://example.com/xl-tiktok2GB-3hari" },
+                    // { nama: "Xtra Kuota YouTube 2GB (3 Hari)", harga: 5786, link: "https://example.com/xl-youtube2GB-3hari" },
+                    // { nama: "Xtra Kuota Edukasi 15GB (7 Hari)", harga: 7878, link: "https://example.com/xl-edukasi15GB-7hari" },
+                    // { nama: "Xtra Kuota YouTube 3GB (7 Hari)", harga: 10225, link: "https://example.com/xl-youtube3GB-7hari" },
+                    // { nama: "Xtra Kuota TikTok 3GB (7 Hari)", harga: 9825, link: "https://example.com/xl-tiktok3GB-7hari" },
+                    // { nama: "Xtra Kuota Instagram 3GB (7 Hari)", harga: 9851, link: "https://example.com/xl-instagram3GB-7hari" },
+                    // { nama: "Xtra Kuota Facebook 3GB (7 Hari)", harga: 9861, link: "https://example.com/xl-facebook3GB-7hari" },
+                    // { nama: "Xtra Kuota Vidio 3GB + Vidio Platinum Mobile (7 Hari)", harga: 8400, link: "https://example.com/xl-vidio3GB-7hari" },
+                    // { nama: "Xtra Kuota Facebook 2GB (30 Hari)", harga: 10180, link: "https://example.com/xl-facebook2GB-30hari" },
+                    // { nama: "Xtra Kuota Instagram 2GB (30 Hari)", harga: 10111, link: "https://example.com/xl-instagram2GB-30hari" },
+                    // { nama: "Xtra Kuota YouTube 2GB (30 Hari)", harga: 10180, link: "https://example.com/xl-youtube2GB-30hari" },
+                    // { nama: "Xtra Kuota iFlix 5GB (30 Hari)", harga: 10180, link: "https://example.com/xl-iflix5GB-30hari" },
+                    // { nama: "Xtra Kuota Joox 10GB (30 Hari)", harga: 10180, link: "https://example.com/xl-joox10GB-30hari" },
+                    // { nama: "Xtra Kuota Waze 10GB (30 Hari)", harga: 10180, link: "https://example.com/xl-waze10GB-30hari" },
+                    // { nama: "Xtra Kuota Midnight 5GB (30 Hari)", harga: 10180, link: "https://example.com/xl-midnight5GB-30hari" },
+                    // { nama: "Xtra Kuota Mobile Legends 10GB (30 Hari)", harga: 10180, link: "https://example.com/xl-ml10GB-30hari" },
+                    // { nama: "Xtra Kuota Vidio 5GB + Vidio Platinum Mobile (30 Hari)", harga: 12875, link: "https://example.com/xl-vidio5GB-30hari" },
+                    // { nama: "Xtra Kuota Vidio 3GB + Vidio Platinum Big Screen (30 Hari)", harga: 17910, link: "https://example.com/xl-vidio3GB-bigscreen" },
+                    // { nama: "Xtra Kuota Reguler 1GB (60 Hari)", harga: 13250, link: "https://example.com/xl-xtra1GB-60hari" },
+                    // { nama: "Xtra Kuota Reguler 2GB (60 Hari)", harga: 14460, link: "https://example.com/xl-xtra2GB-60hari" },
+                    // { nama: "Xtra Kuota Reguler 4GB (Kota Tertentu) (60 Hari)", harga: 14950, link: "https://example.com/xl-xtra4GB-60hari" }
+                ],
+
+                "Data Games": [
+                    { "nama": "1GB Kuota Games (30 Hari)", "harga": 4350, "link": "https://fanpaystore.bukaolshop.site/produk/xl-data-game-1gb-30-hari-2919470" },
+                    { "nama": "2GB Kuota Games (30 Hari)", "harga": 8150, "link": "https://fanpaystore.bukaolshop.site/produk/xl-data-game-2gb-30-hari-2919471" },
+                    // { "nama": "500MB All + 500MB Games (30 Hari)", "harga": 5350, "link": "https://example.com/500MB-All-Games" },
+                    // { "nama": "1GB All + 1GB Games (30 Hari)", "harga": 9450, "link": "https://example.com/1GB-All-Games" },
+                    // { "nama": "1.5GB All + 1.5GB Games (30 Hari)", "harga": 13800, "link": "https://example.com/1.5GB-All-Games" },
+                    // { "nama": "2GB All + 2GB Games (30 Hari)", "harga": 19200, "link": "https://example.com/2GB-All-Games" },
+                    // { "nama": "4GB All + 4GB Games (30 Hari)", "harga": 33300, "link": "https://example.com/4GB-All-Games" },
+                    // { "nama": "5GB All + 5GB Games (30 Hari)", "harga": 40300, "link": "https://example.com/5GB-All-Games" }
+                ],
+            }
+        };
+
+        function detectProvider() {
+            let phoneNumber = document.getElementById("phoneNumber").value;
+            let providerName = document.getElementById("providerName");
+            let detectedProvider = "-";
+
+            if (phoneNumber.length >= 4) {
+                let prefix = phoneNumber.substring(0, 4);
+                let providers = {
+                    "Telkomsel": ['0811', '0812', '0821', '0823', '0851', '0852', '0853'],
+                    "Indosat": ['0814', '0815', '0816', '0855', '0856', '0857', '0858'],
+                    "Tri": ['0895', '0896', '0897', '0898', '0899'],
+                    "XL": ['0817', '0818', '0819', '0859', '0877', '0878'],
+                    "Axis": ['0831', '0832', '0833', '0838', '0859'],
+                    "Smartfren": ['0881', '0882', '0883', '0884', '0885', '0886', '0887', '0888', '0889']
+                };
+
+                for (const provider in providers) {
+                    if (providers[provider].includes(prefix)) {
+                        detectedProvider = provider;
+                        break;
+                    }
+                }
+            }
+
+            providerName.innerText = "Provider: " + detectedProvider;
+            generateCategories(detectedProvider);
+        }
+
+        function generateCategories(provider) {
+            let categoryContainer = document.getElementById("categoryContainer");
+            categoryContainer.innerHTML = "";
+            document.getElementById("buttonsContainer").innerHTML = ""; // Bersihkan produk
+
+            if (!paketData[provider]) return;
+
+            for (let kategori in paketData[provider]) {
+                let button = document.createElement("button");
+                button.className = "btn-category";
+                button.innerHTML = kategori;
+                button.onclick = () => generateButtons(provider, kategori);
+                categoryContainer.appendChild(button);
+            }
+        }
+
+        function generateButtons(provider, kategori) {
+            let container = document.getElementById("buttonsContainer");
+            container.innerHTML = "";
+
+            let produkList = paketData[provider][kategori];
+            if (!produkList) return;
+
+            produkList.forEach((produk) => {
+                let button = document.createElement("button");
+                button.className = "btn-produk";
+                button.innerHTML = `<div id="nama-produk">${produk.nama}</div> <div class="harga-produk"><p>${mataUang} ${produk.harga}</p></div>`;
+                button.onclick = () => showDetail(provider, kategori, produk);
+                container.appendChild(button);
+            });
+        }
+
+        function showDetail(provider, kategori, produk) {
+            document.getElementById("modalTitle").innerText = "Detail Paket Data";
+            document.getElementById("modalProvider").innerText = provider;
+            document.getElementById("modalKuota").innerText = produk.nama;
+            document.getElementById("modalHarga").innerText = mataUang + " " + produk.harga;
+            document.getElementById("buyNowButton").onclick = () => buyNow(produk.link);
+            document.getElementById("productModal").style.display = "block";
+        }
+
+        function buyNow(link) {
+            let phoneNumber = document.getElementById("phoneNumber").value;
+            if (!phoneNumber) {
+                alert("Silakan masukkan nomor telepon terlebih dahulu!");
+                return;
+            }
+            let finalLink = link + "?catatan=" + encodeURIComponent(phoneNumber);
+            window.location.href = finalLink;
+        }
+
+        // pengubah nomor 628 to 08 statr
+        const input = document.getElementById('phoneNumber');
+
+        input.addEventListener('input', function () {
+            let value = input.value;
+
+            // Hapus karakter selain angka
+            value = value.replace(/\D/g, '');
+
+            // Ganti nilai yang dimulai dengan +628, 628, atau 8 menjadi 08
+            if (value.startsWith('628')) {
+                value = '08' + value.slice(3);
+            } else if (value.startsWith('+628')) {
+                value = '08' + value.slice(4);
+            } else if (value.startsWith('8')) {
+                value = '08' + value.slice(1);
+            }
+
+            // Set nilai input dengan format yang diubah
+            input.value = value;
+        });
+
+        function closeModal() {
+            document.getElementById("productModal").style.display = "none";
+        }
+    </script>
+</body>
+
+</html>
